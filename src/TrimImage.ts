@@ -28,7 +28,7 @@ export class TrimImage {
      *
      * @return {imageData object}
      */
-    configureImage(image, funcLoadBack) {
+    configureImage(image: string | HTMLImageElement, funcLoadBack) {
         if ($.isString(image)) {
             if (funcLoadBack === undefined) {
                 this.image = $.createImage(image);
@@ -43,7 +43,7 @@ export class TrimImage {
             return;
         }
 
-        this.image = image;
+        this.image = <HTMLImageElement>image;
 
         //La imagen en este punto ya esta cargada
         //Llamamos el callBack
@@ -56,39 +56,42 @@ export class TrimImage {
      * @param {image object} image - Objeto imagen
      * @return {imageData object}
      */
-    getImageData(image) {
-        var imgW = image.width,
-            imgH = image.height;
+    getImageData(image: HTMLImageElement) {
+        let imgWidth = image.width;
+        let imgHeight = image.height;
 
-        var context = $.createCanvasBack(imgW, imgH).context;
-        context.drawImage(image, 0, 0, imgW, imgH);
+        let context = $.createCanvasBack(imgWidth, imgHeight).context;
+        context.drawImage(image, 0, 0, imgWidth, imgHeight);
 
-        return context.getImageData(0, 0, imgW, imgH);
+        return context.getImageData(0, 0, imgWidth, imgHeight);
     }
 
     /**
      * @description - Convierte un imageData object a un image object
      *
      * @param {imageData} imageData - Objeto con matriz de datos de la imagen
-     * @return {image object}
+     * @return {HTMLImageElement}
      */
     getImage(imageData, funcBack?) {
         this.validateImageData(imageData);
 
-        var imgW = imageData.width,
-            imgH = imageData.height;
+        let imgWidth = imageData.width;
+        let imgHeight = imageData.height;
 
-        var cnvBack = $.createCanvasBack(imgW, imgH);
+        let canvasBack = $.createCanvasBack(imgWidth, imgHeight);
 
-        var context = cnvBack.context,
-            canvas = cnvBack.canvas;
+        let context = canvasBack.context;
+        let canvas = canvasBack.canvas;
 
         context.putImageData(imageData, 0, 0);
-        var image = new Image();
-        image.width = imgW;
-        image.height = imgH;
 
-        if (funcBack) image.onload = funcBack;
+        let image = new Image();
+        image.width = imgWidth;
+        image.height = imgHeight;
+
+        if (funcBack) {
+            image.onload = funcBack;
+        }
 
         image.src = canvas.toDataURL('image/png');
 
@@ -157,6 +160,7 @@ export class TrimImage {
         this.image = this.getImage(
             this._trimLeft(this.getImageData(this.image))
         );
+        
         return this;
     }
 
@@ -173,6 +177,7 @@ export class TrimImage {
         this.image = this.getImage(
             this._trimRight(this.getImageData(this.image))
         );
+
         return this;
     }
 
@@ -185,7 +190,7 @@ export class TrimImage {
     private _trim(imageData) {
         this.validateImageData(imageData);
 
-        var trimmedImage = this._trimTop(imageData);
+        let trimmedImage = this._trimTop(imageData);
         trimmedImage = this._trimBottom(trimmedImage);
         trimmedImage = this._trimLeft(trimmedImage);
         trimmedImage = this._trimRight(trimmedImage);
@@ -200,18 +205,19 @@ export class TrimImage {
      * @return {imageData object}
      */
     private _trimTop(imageData) {
-        var row = 0,
-            len_col = imageData.width * 4,
-            len_row = imageData.height;
+        let row = 0;
+        let lenghtCol = imageData.width * 4;
+        let lenghtRow = imageData.height;
 
         this.readImageData('top', imageData, function(r, c) {
             if (this.alpha() != 0) {
                 row = r;
+
                 return 'break';
             }
         });
 
-        return this.cutImageData(imageData, row, 0, len_row, len_col);
+        return this.cutImageData(imageData, row, 0, lenghtRow, lenghtCol);
     }
 
     /**
@@ -221,18 +227,18 @@ export class TrimImage {
      * @return {imageData object}
      */
     private _trimBottom(imageData) {
-        var len_row = imageData.height,
-            len_col = imageData.width * 4;
+        let lenghtRow = imageData.height;
+        let lenghtCol = imageData.width * 4;
 
         this.readImageData('bottom', imageData, function(r, c) {
             if (this.alpha() != 0) {
-                len_row = r;
+                lenghtRow = r;
 
                 return 'break';
             }
         });
 
-        return this.cutImageData(imageData, 0, 0, len_row, len_col);
+        return this.cutImageData(imageData, 0, 0, lenghtRow, lenghtCol);
     }
 
     /**
@@ -242,9 +248,9 @@ export class TrimImage {
      * @return {imageData object}
      */
     private _trimLeft(imageData) {
-        var col = 0,
-            len_col = imageData.width * 4,
-            len_row = imageData.height;
+        let col = 0;
+        let lenghtCol = imageData.width * 4;
+        let lenghtRow = imageData.height;
 
         this.readImageData('left', imageData, function(r, c) {
             if (this.alpha() != 0) {
@@ -254,7 +260,7 @@ export class TrimImage {
             }
         });
 
-        return this.cutImageData(imageData, 0, col, len_row, len_col);
+        return this.cutImageData(imageData, 0, col, lenghtRow, lenghtCol);
     }
 
     /**
@@ -264,8 +270,8 @@ export class TrimImage {
      * @return {imageData object}
      */
     private _trimRight(imageData) {
-        var len_col = imageData.width * 4,
-            len_row = imageData.height;
+        let len_col = imageData.width * 4;
+        let len_row = imageData.height;
 
         this.readImageData('right', imageData, function(r, c) {
             if (this.alpha() != 0) {
@@ -281,30 +287,28 @@ export class TrimImage {
     cutImageData(imageData, rowIni, colIni, rowFin, colFin) {
         this.validateImageData(imageData);
 
-        var pixels = imageData.data,
-            len_col = imageData.width * 4,
-            row,
-            col,
-            rowCurrent;
+        let pixels = imageData.data;
+        let len_col = imageData.width * 4;
 
         rowFin = rowFin == 0 ? 1 : rowFin;
         colFin = colFin == 0 ? 1 : colFin;
 
-        var copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni,
+        let copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni,
             copyWidth = colFin / 4 - colIni / 4;
 
-        var copyImageData: any = [];
+        let copyImageData: any = [];
+
         $.createCanvasBack(copyWidth, copyHeight, function(ctx) {
             copyImageData = ctx.createImageData(copyWidth, copyHeight);
         });
 
-        var diffCol = len_col - colFin;
+        let diffCol = len_col - colFin;
+        let countCopy = 0;
 
-        var countCopy = 0;
-        for (row = rowIni; row < rowFin; row++) {
-            rowCurrent = row * colFin + row * diffCol;
+        for (let row = rowIni; row < rowFin; row++) {
+            let rowCurrent = row * colFin + row * diffCol;
 
-            for (col = colIni; col < colFin; col += 4, countCopy += 4) {
+            for (let col = colIni; col < colFin; col += 4, countCopy += 4) {
                 copyImageData.data[countCopy] = pixels[rowCurrent + col];
                 copyImageData.data[countCopy + 1] =
                     pixels[rowCurrent + col + 1];
@@ -323,25 +327,26 @@ export class TrimImage {
 
         typeReader = typeReader.toUpperCase();
 
-        var pixels = imageData.data,
-            row,
-            col,
-            rowCurrent = -1;
+        let pixels = imageData.data;
+        let row;
+        let col;
+        let rowCurrent = -1;
 
-        var len_col = imageData.width * 4,
-            len_row = imageData.height;
+        let len_col = imageData.width * 4;
+        let len_row = imageData.height;
 
-        var isBreak: any = false;
+        let isBreak: any = false;
 
         if (typeReader === 'TOP') {
-            var rowIni = 0,
-                rowFin = len_row,
-                colIni = 0,
-                colFin = len_col,
-                interator = {
-                    row: 1,
-                    col: 4
-                };
+            let rowIni = 0;
+            let rowFin = len_row;
+            let colIni = 0;
+            let colFin = len_col;
+
+            let interator = {
+                row: 1,
+                col: 4
+            };
 
             for (row = rowIni; row < rowFin; row += interator.row) {
                 rowCurrent = row * len_col;
@@ -361,15 +366,16 @@ export class TrimImage {
                         break;
                     }
                 }
+
                 if (isBreak == 'break') {
                     break;
                 }
             }
         } else if (typeReader === 'BOTTOM') {
-            let rowIni = len_row,
-                rowFin = 0,
-                colIni = len_col,
-                colFin = 0;
+            let rowIni = len_row;
+            let rowFin = 0;
+            let colIni = len_col;
+            let colFin = 0;
 
             for (row = rowIni; row >= rowFin; row--) {
                 rowCurrent = row * colIni;
@@ -389,15 +395,16 @@ export class TrimImage {
                         break;
                     }
                 }
+
                 if (isBreak == 'break') {
                     break;
                 }
             }
         } else if (typeReader === 'LEFT') {
-            var rowIni = 0,
-                rowFin = len_row,
-                colIni = 0,
-                colFin = len_col;
+            let rowIni = 0;
+            let rowFin = len_row;
+            let colIni = 0;
+            let colFin = len_col;
 
             for (col = colIni; col < colFin; col += 4) {
                 for (row = rowIni; row < rowFin; row++) {
@@ -417,15 +424,16 @@ export class TrimImage {
                         break;
                     }
                 }
+
                 if (isBreak == 'break') {
                     break;
                 }
             }
         } else if (typeReader === 'RIGHT') {
-            let rowIni = len_row - 1,
-                rowFin = 1,
-                colIni = len_col,
-                colFin = 0;
+            let rowIni = len_row - 1;
+            let rowFin = 1;
+            let colIni = len_col;
+            let colFin = 0;
 
             for (col = colIni; col > colFin; col -= 4) {
                 for (row = rowIni; row > rowFin; row--) {
@@ -445,6 +453,7 @@ export class TrimImage {
                         break;
                     }
                 }
+
                 if (isBreak == 'break') {
                     break;
                 }
@@ -453,7 +462,9 @@ export class TrimImage {
 
         function getAndSetForPixel(pos) {
             return function(val) {
-                if (!val) return pixels[pos];
+                if (!val) {
+                    return pixels[pos];
+                }
 
                 pixels[pos] = val;
             };
@@ -462,6 +473,9 @@ export class TrimImage {
         return imageData;
     }
 
+    /**
+     * @param imageData
+     */
     private validateImageData(imageData) {
         if ($.is(imageData) !== 'imagedata')
             throw 'ImageData Exception: No es compatible el tipo de dato';
