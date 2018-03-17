@@ -1,5 +1,3 @@
-declare let $;
-
 /**
  * @description - Crea un objeto para manipular la imagen pasada por el parametro
  *
@@ -29,15 +27,18 @@ export class TrimImage {
      * @return {imageData object}
      */
     configureImage(image: string | HTMLImageElement, funcLoadBack) {
-        if ($.isString(image)) {
+        if (typeof image === 'string') {
             if (funcLoadBack === undefined) {
-                this.image = $.createImage(image);
+                this.image = createImage(image);
+
                 return;
             }
 
-            $.createImage(image, function() {
-                this.image = this;
-                funcLoadBack.call(this, this);
+            let self = this;
+
+            createImage(image, function() {
+                self.image = this;
+                funcLoadBack.call(this, self);
             });
 
             return;
@@ -60,7 +61,7 @@ export class TrimImage {
         let imgWidth = image.width;
         let imgHeight = image.height;
 
-        let context = $.createCanvasBack(imgWidth, imgHeight).context;
+        let context = createCanvasBack(imgWidth, imgHeight).context;
         context.drawImage(image, 0, 0, imgWidth, imgHeight);
 
         return context.getImageData(0, 0, imgWidth, imgHeight);
@@ -78,7 +79,7 @@ export class TrimImage {
         let imgWidth = imageData.width;
         let imgHeight = imageData.height;
 
-        let canvasBack = $.createCanvasBack(imgWidth, imgHeight);
+        let canvasBack = createCanvasBack(imgWidth, imgHeight);
 
         let context = canvasBack.context;
         let canvas = canvasBack.canvas;
@@ -160,7 +161,7 @@ export class TrimImage {
         this.image = this.getImage(
             this._trimLeft(this.getImageData(this.image))
         );
-        
+
         return this;
     }
 
@@ -298,7 +299,7 @@ export class TrimImage {
 
         let copyImageData: any = [];
 
-        $.createCanvasBack(copyWidth, copyHeight, function(ctx) {
+        createCanvasBack(copyWidth, copyHeight, function(ctx) {
             copyImageData = ctx.createImageData(copyWidth, copyHeight);
         });
 
@@ -477,7 +478,55 @@ export class TrimImage {
      * @param imageData
      */
     private validateImageData(imageData) {
-        if ($.is(imageData) !== 'imagedata')
+        if (is(imageData) !== 'imagedata')
             throw 'ImageData Exception: No es compatible el tipo de dato';
     }
+}
+
+function is(element) {
+    return {}.toString
+        .call(element)
+        .match(/\s([a-z|A-Z]+)/)[1]
+        .toLowerCase();
+}
+
+/**
+ * @param url string
+ * @param funcBack Function
+ */
+function createImage(url: string, funcBack?) {
+    let img = new Image();
+
+    if (funcBack) {
+        img.onload = funcBack;
+    }
+
+    img.src = url;
+
+    return img;
+}
+
+/**
+ * @param width
+ * @param height
+ * @param funcBack
+ */
+function createCanvasBack(width: number, height: number, funcBack?) {
+    let canvasDum = document.createElement('canvas');
+
+    canvasDum.width = width;
+    canvasDum.height = height;
+
+    let contextDum = canvasDum.getContext('2d');
+
+    let scoper = {
+        canvas: canvasDum,
+        context: contextDum
+    };
+
+    if (funcBack) {
+        funcBack.apply(scoper, [contextDum, canvasDum]);
+    }
+
+    return scoper;
 }
