@@ -1,3 +1,5 @@
+import { TypeReader } from './constants/type-reader';
+
 /**
  * @description - Crea un objeto para manipular la imagen pasada por el parametro
  *
@@ -210,7 +212,7 @@ export class TrimImage {
         let lenghtCol = imageData.width * 4;
         let lenghtRow = imageData.height;
 
-        this.readImageData('top', imageData, function(r, c) {
+        this.readImageData(TypeReader.TOP, imageData, function(r, c) {
             if (this.alpha() != 0) {
                 row = r;
 
@@ -231,7 +233,7 @@ export class TrimImage {
         let lenghtRow = imageData.height;
         let lenghtCol = imageData.width * 4;
 
-        this.readImageData('bottom', imageData, function(r, c) {
+        this.readImageData(TypeReader.BOTTOM, imageData, function(r, c) {
             if (this.alpha() != 0) {
                 lenghtRow = r;
 
@@ -253,7 +255,7 @@ export class TrimImage {
         let lenghtCol = imageData.width * 4;
         let lenghtRow = imageData.height;
 
-        this.readImageData('left', imageData, function(r, c) {
+        this.readImageData(TypeReader.LEFT, imageData, function(r, c) {
             if (this.alpha() != 0) {
                 col = c;
 
@@ -274,7 +276,7 @@ export class TrimImage {
         let len_col = imageData.width * 4;
         let len_row = imageData.height;
 
-        this.readImageData('right', imageData, function(r, c) {
+        this.readImageData(TypeReader.RIGHT, imageData, function(r, c) {
             if (this.alpha() != 0) {
                 len_col = c;
 
@@ -323,10 +325,8 @@ export class TrimImage {
         return copyImageData;
     }
 
-    private readImageData(typeReader, imageData, funcBack) {
+    private readImageData(typeReader: TypeReader, imageData, funcBack) {
         this.validateImageData(imageData);
-
-        typeReader = typeReader.toUpperCase();
 
         let pixels = imageData.data;
         let row;
@@ -338,7 +338,7 @@ export class TrimImage {
 
         let isBreak: any = false;
 
-        if (typeReader === 'TOP') {
+        if (typeReader === TypeReader.TOP) {
             let rowIni = 0;
             let rowFin = len_row;
             let colIni = 0;
@@ -372,7 +372,7 @@ export class TrimImage {
                     break;
                 }
             }
-        } else if (typeReader === 'BOTTOM') {
+        } else if (typeReader === TypeReader.BOTTOM) {
             let rowIni = len_row;
             let rowFin = 0;
             let colIni = len_col;
@@ -401,7 +401,7 @@ export class TrimImage {
                     break;
                 }
             }
-        } else if (typeReader === 'LEFT') {
+        } else if (typeReader === TypeReader.LEFT) {
             let rowIni = 0;
             let rowFin = len_row;
             let colIni = 0;
@@ -430,7 +430,7 @@ export class TrimImage {
                     break;
                 }
             }
-        } else if (typeReader === 'RIGHT') {
+        } else if (typeReader === TypeReader.RIGHT) {
             let rowIni = len_row - 1;
             let rowFin = 1;
             let colIni = len_col;
