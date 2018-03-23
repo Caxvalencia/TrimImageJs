@@ -25,10 +25,10 @@ export class TrimImage {
      *
      * @return {imageData object}
      */
-    configureImage(image: string | HTMLImageElement, callback) {
+    async configureImage(image: string | HTMLImageElement, callback) {
         this.image =
             typeof image === 'string'
-                ? createImage(image)
+                ? await createImage(image)
                 : <HTMLImageElement>image;
 
         if (callback !== undefined) {
@@ -477,20 +477,16 @@ function is(element) {
 }
 
 /**
- * @param {string} url 
- * @param {any} [funcBack] 
- * @returns {HTMLImageElement} 
+ * @param {string} src
+ * @returns {Promise<HTMLImageElement>}
  */
-function createImage(url: string, funcBack?): HTMLImageElement {
-    let img = new Image();
-
-    if (funcBack) {
-        img.onload = funcBack;
-    }
-
-    img.src = url;
-
-    return img;
+function createImage(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+        let img = new Image();       
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
 }
 
 /**
@@ -499,20 +495,20 @@ function createImage(url: string, funcBack?): HTMLImageElement {
  * @param funcBack
  */
 function createCanvasBack(width: number, height: number, funcBack?) {
-    let canvasDum = document.createElement('canvas');
+    let canvasDummy = document.createElement('canvas');
 
-    canvasDum.width = width;
-    canvasDum.height = height;
+    canvasDummy.width = width;
+    canvasDummy.height = height;
 
-    let contextDum = canvasDum.getContext('2d');
+    let context = canvasDummy.getContext('2d');
 
     let scoper = {
-        canvas: canvasDum,
-        context: contextDum
+        canvas: canvasDummy,
+        context: context
     };
 
     if (funcBack) {
-        funcBack.apply(scoper, [contextDum, canvasDum]);
+        funcBack.apply(scoper, [context, canvasDummy]);
     }
 
     return scoper;
