@@ -1,63 +1,45 @@
 import { TypeReader } from './constants/type-reader';
 
 /**
- * @description - Crea un objeto para manipular la imagen pasada por el parametro
- *
- * @param {image object} image - Imagen a procesar
- * @param {function} funcLoadBack - Función back para el load de la imagen
+ * @export
+ * @class TrimImage
  */
 export class TrimImage {
     private image: HTMLImageElement;
 
     /**
-     * @constructor
-     * @param image
-     * @param funcLoadBack
+     * Creates an instance of TrimImage.
+     *
+     * @param {HTMLImageElement} image Imagen a procesar
+     * @param {any} funcLoadBack Función back para el load de la imagen
      */
-    constructor(image, funcLoadBack) {
+    constructor(image: HTMLImageElement, funcLoadBack) {
         this.configureImage(image, funcLoadBack);
-
-        return this;
     }
 
     /**
      * @description - Configura el parametro de entrada "image" del constructor
      *
      * @param {[image object, String]} image - Imagen a tratar
-     * @param {Function} funcLoadBack - Funcion callback
+     * @param {Function} callback - Funcion callback
      *
      * @return {imageData object}
      */
-    configureImage(image: string | HTMLImageElement, funcLoadBack) {
-        if (typeof image === 'string') {
-            if (funcLoadBack === undefined) {
-                this.image = createImage(image);
+    configureImage(image: string | HTMLImageElement, callback) {
+        this.image =
+            typeof image === 'string'
+                ? createImage(image)
+                : <HTMLImageElement>image;
 
-                return;
-            }
-
-            let self = this;
-
-            createImage(image, function() {
-                self.image = this;
-                funcLoadBack.call(this, self);
-            });
-
-            return;
+        if (callback !== undefined) {
+            callback.call(this, this.image);
         }
-
-        this.image = <HTMLImageElement>image;
-
-        //La imagen en este punto ya esta cargada
-        //Llamamos el callBack
-        funcLoadBack.call(image, this);
     }
 
     /**
      * @description - Devuelve un objeto imageData a partir de una imagen dada
-     *
-     * @param {image object} image - Objeto imagen
-     * @return {imageData object}
+     * @param {HTMLImageElement} image
+     * @returns
      */
     getImageData(image: HTMLImageElement) {
         let imgWidth = image.width;
@@ -99,6 +81,10 @@ export class TrimImage {
         image.src = canvas.toDataURL('image/png');
 
         return image;
+    }
+
+    static trim(image?, callback?) {
+        return new TrimImage(image, callback).trim();
     }
 
     /**
@@ -491,10 +477,11 @@ function is(element) {
 }
 
 /**
- * @param url string
- * @param funcBack Function
+ * @param {string} url 
+ * @param {any} [funcBack] 
+ * @returns {HTMLImageElement} 
  */
-function createImage(url: string, funcBack?) {
+function createImage(url: string, funcBack?): HTMLImageElement {
     let img = new Image();
 
     if (funcBack) {
