@@ -5,24 +5,24 @@
         var imagen = this.image;
 
         contenedor.appendChild(
-            addAttrs(TrimImage.trim(imagen), 'ALL', 'TrimImage.trim()')
+            addAttrs(TrimImage.trim(imagen).image, 'ALL', 'TrimImage.trim()')
         );
+
         contenedor.appendChild(
-            addAttrs(TrimImage.trimLeft(imagen), 'LEFT', 'TrimImage.trimLeft()')
+            addAttrs(this.trimLeft(imagen), 'LEFT', 'TrimImage.trimLeft()')
         );
+
+        contenedor.appendChild(
+            addAttrs(this.trimRight(imagen), 'RIGHT', 'TrimImage.trimRight()')
+        );
+
+        contenedor.appendChild(
+            addAttrs(this.trimTop(imagen), 'TOP', 'TrimImage.trimTop()')
+        );
+
         contenedor.appendChild(
             addAttrs(
-                TrimImage.trimRight(imagen),
-                'RIGHT',
-                'TrimImage.trimRight()'
-            )
-        );
-        contenedor.appendChild(
-            addAttrs(TrimImage.trimTop(imagen), 'TOP', 'TrimImage.trimTop()')
-        );
-        contenedor.appendChild(
-            addAttrs(
-                TrimImage.trimBottom(imagen),
+                this.trimBottom(imagen),
                 'BOTTOM',
                 'TrimImage.trimBottom()'
             )
@@ -45,7 +45,7 @@
         frameImage.appendChild(boxImage);
 
         boxDescription.innerHTML += '<h3>' + title + '</h3>' + text;
-        
+
         frameImage.appendChild(boxDescription);
 
         return frameImage;
