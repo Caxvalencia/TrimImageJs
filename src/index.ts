@@ -1,3 +1,3 @@
-import { TrimImage } from './TrimImage';
+import { TrimImage } from './trim-image';
 
 export { TrimImage };
