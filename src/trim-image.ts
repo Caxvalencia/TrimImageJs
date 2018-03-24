@@ -86,6 +86,10 @@ export class TrimImage {
     static trim(image?, callback?) {
         return new TrimImage(image, callback).trim();
     }
+    
+    static trimLeft(image?, callback?) {
+        return new TrimImage(image, callback).trimLeft();
+    }
 
     /**
      * @description - Elimina pixeles innecesarios para todos los bordes de la imagen
@@ -107,7 +111,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimTop(image) {
+    trimTop(image?) {
         if (image !== undefined) {
             return this.getImage(this._trimTop(this.getImageData(image)));
         }
@@ -124,7 +128,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimBottom(image) {
+    trimBottom(image?) {
         if (image !== undefined) {
             return this.getImage(this._trimBottom(this.getImageData(image)));
         }
@@ -141,7 +145,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimLeft(image) {
+    trimLeft(image?) {
         if (image !== undefined) {
             return this.getImage(this._trimLeft(this.getImageData(image)));
         }
@@ -158,7 +162,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimRight(image) {
+    trimRight(image?) {
         if (image !== undefined) {
             return this.getImage(this._trimRight(this.getImageData(image)));
         }
