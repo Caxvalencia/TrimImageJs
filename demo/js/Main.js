@@ -1,5 +1,5 @@
-!(function(window, undefined) {
-    const contenedor = document.getElementById('content-ejemplo');
+!(function() {
+    var contenedor = document.getElementById('content-ejemplo');
 
     new TrimImage('img/imagenEjemplo.png', function() {
         var imagen = this.image;
@@ -50,4 +50,4 @@
 
         return frameImage;
     }
-})(window);
+})();

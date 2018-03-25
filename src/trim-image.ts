@@ -1,4 +1,5 @@
 import { TypeReader } from './constants/type-reader';
+import { ColorRGBA } from './contracts/color-rgba';
 
 /**
  * @export
@@ -83,6 +84,12 @@ export class TrimImage {
         return image;
     }
 
+    /**
+     * @static
+     * @param {any} [image]
+     * @param {function} [callback]
+     * @returns
+     */
     static trim(image?, callback?) {
         return new TrimImage(image, callback).trim();
     }
@@ -90,7 +97,7 @@ export class TrimImage {
     static trimTop(image?, callback?) {
         return new TrimImage(image, callback).trimTop();
     }
-    
+
     static trimBottom(image?, callback?) {
         return new TrimImage(image, callback).trimBottom();
     }
@@ -105,14 +112,8 @@ export class TrimImage {
 
     /**
      * @description - Elimina pixeles innecesarios para todos los bordes de la imagen
-     * @param [image object] image - Parametro opcional tipo Image
-     * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trim(image?: HTMLImageElement) {
-        if (image !== undefined) {
-            return this.getImage(this._trim(this.getImageData(image)));
-        }
-
+    trim() {
         this.image = this.getImage(this._trim(this.getImageData(this.image)));
 
         return this;
@@ -123,11 +124,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimTop(image?) {
-        if (image !== undefined) {
-            return this.getImage(this._trimTop(this.getImageData(image)));
-        }
-
+    trimTop() {
         this.image = this.getImage(
             this._trimTop(this.getImageData(this.image))
         );
@@ -140,11 +137,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimBottom(image?) {
-        if (image !== undefined) {
-            return this.getImage(this._trimBottom(this.getImageData(image)));
-        }
-
+    trimBottom() {
         this.image = this.getImage(
             this._trimBottom(this.getImageData(this.image))
         );
@@ -157,11 +150,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trimLeft(image?) {
-        if (image !== undefined) {
-            return this.getImage(this._trimLeft(this.getImageData(image)));
-        }
-
+    trimLeft() {
         this.image = this.getImage(
             this._trimLeft(this.getImageData(this.image))
         );
@@ -171,14 +160,9 @@ export class TrimImage {
 
     /**
      * @description - Elimina pixeles innecesarios para el borde derecho de la imagen
-     * @param [image object] image - Parametro opcional tipo Image
-     * @return [image object, this] - Retorna this si el parametro es indefinido
+     * @returns {this}
      */
-    trimRight(image?) {
-        if (image !== undefined) {
-            return this.getImage(this._trimRight(this.getImageData(image)));
-        }
-
+    trimRight(): this {
         this.image = this.getImage(
             this._trimRight(this.getImageData(this.image))
         );
@@ -188,11 +172,11 @@ export class TrimImage {
 
     /**
      * @description - Elimina pixeles de la imagen innecesarios
-     *
-     * @param {imageData} imageData - Datos de la imagen en forma de matriz
-     * @return {imageData object}
+     * @private
+     * @param {ImageData} imageData
+     * @returns {ImageData}
      */
-    private _trim(imageData) {
+    private _trim(imageData: ImageData): ImageData {
         this.validateImageData(imageData);
 
         let trimmedImage = this._trimTop(imageData);
@@ -204,92 +188,118 @@ export class TrimImage {
     }
 
     /**
-     * @description - Devuelve un array de datos de la imagen
-     *
-     * @param {imageData} imageData - Matriz de datos de la imagen
-     * @return {imageData object}
+     * @private
+     * @param {ImageData} imageData
+     * @returns {ImageData}
      */
-    private _trimTop(imageData) {
+    private _trimTop(imageData: ImageData): ImageData {
         let row = 0;
         let lenghtCol = imageData.width * 4;
         let lenghtRow = imageData.height;
 
-        this.readImageData(TypeReader.TOP, imageData, function(r, c) {
-            if (this.alpha() != 0) {
-                row = r;
+        this.readImageData(
+            TypeReader.TOP,
+            imageData,
+            (_row, _col, rgba: ColorRGBA) => {
+                if (rgba.alpha() != 0) {
+                    row = _row;
 
-                return 'break';
+                    return 'break';
+                }
             }
-        });
+        );
 
         return this.cutImageData(imageData, row, 0, lenghtRow, lenghtCol);
     }
 
     /**
-     * @description - Devuelve un array de datos de la imagen
-     *
-     * @param {imageData} imageData - Matriz de datos de la imagen
-     * @return {imageData object}
+     * @private
+     * @param {ImageData} imageData
+     * @returns {ImageData}
      */
-    private _trimBottom(imageData) {
+    private _trimBottom(imageData: ImageData): ImageData {
         let lenghtRow = imageData.height;
         let lenghtCol = imageData.width * 4;
 
-        this.readImageData(TypeReader.BOTTOM, imageData, function(r, c) {
-            if (this.alpha() != 0) {
-                lenghtRow = r;
+        this.readImageData(
+            TypeReader.BOTTOM,
+            imageData,
+            (_row, _col, rgba: ColorRGBA) => {
+                if (rgba.alpha() != 0) {
+                    lenghtRow = _row;
 
-                return 'break';
+                    return 'break';
+                }
             }
-        });
+        );
 
         return this.cutImageData(imageData, 0, 0, lenghtRow, lenghtCol);
     }
 
     /**
-     * @description - Devuelve un array de datos de la imagen
-     *
-     * @param {imageData} imageData - Matriz de datos de la imagen
-     * @return {imageData object}
+     * @private
+     * @param {ImageData} imageData
+     * @returns {ImageData}
      */
-    private _trimLeft(imageData) {
-        let col = 0;
+    private _trimLeft(imageData: ImageData): ImageData {
+        let column = 0;
         let lenghtCol = imageData.width * 4;
         let lenghtRow = imageData.height;
 
-        this.readImageData(TypeReader.LEFT, imageData, function(r, c) {
-            if (this.alpha() != 0) {
-                col = c;
+        this.readImageData(
+            TypeReader.LEFT,
+            imageData,
+            (_row, _col, rgba: ColorRGBA) => {
+                if (rgba.alpha() != 0) {
+                    column = _col;
 
-                return 'break';
+                    return 'break';
+                }
             }
-        });
+        );
 
-        return this.cutImageData(imageData, 0, col, lenghtRow, lenghtCol);
+        return this.cutImageData(imageData, 0, column, lenghtRow, lenghtCol);
     }
 
     /**
-     * @description - Devuelve un array de datos de la imagen
-     *
-     * @param {imageData} imageData - Matriz de datos de la imagen
-     * @return {imageData object}
+     * @private
+     * @param {ImageData} imageData
+     * @returns {ImageData}
      */
-    private _trimRight(imageData) {
+    private _trimRight(imageData: ImageData): ImageData {
         let len_col = imageData.width * 4;
         let len_row = imageData.height;
 
-        this.readImageData(TypeReader.RIGHT, imageData, function(r, c) {
-            if (this.alpha() != 0) {
-                len_col = c;
+        this.readImageData(
+            TypeReader.RIGHT,
+            imageData,
+            (_row, _col, rgba: ColorRGBA) => {
+                if (rgba.alpha() != 0) {
+                    len_col = _col;
 
-                return 'break';
+                    return 'break';
+                }
             }
-        });
+        );
 
         return this.cutImageData(imageData, 0, 0, len_row, len_col);
     }
 
-    cutImageData(imageData, rowIni, colIni, rowFin, colFin) {
+    /**
+     * @param {ImageData} imageData
+     * @param {number} rowIni
+     * @param {number} colIni
+     * @param {number} rowFin
+     * @param {number} colFin
+     * @returns {ImageData}
+     */
+    cutImageData(
+        imageData: ImageData,
+        rowIni: number,
+        colIni: number,
+        rowFin: number,
+        colFin: number
+    ): ImageData {
         this.validateImageData(imageData);
 
         let pixels = imageData.data;
@@ -301,11 +311,15 @@ export class TrimImage {
         let copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni,
             copyWidth = colFin / 4 - colIni / 4;
 
-        let copyImageData: any = [];
+        let copyImageData: ImageData;
 
-        createCanvasBack(copyWidth, copyHeight, function(ctx) {
-            copyImageData = ctx.createImageData(copyWidth, copyHeight);
-        });
+        createCanvasBack(
+            copyWidth,
+            copyHeight,
+            (ctx: CanvasRenderingContext2D) => {
+                copyImageData = ctx.createImageData(copyWidth, copyHeight);
+            }
+        );
 
         let diffCol = len_col - colFin;
         let countCopy = 0;
@@ -327,7 +341,18 @@ export class TrimImage {
         return copyImageData;
     }
 
-    private readImageData(typeReader: TypeReader, imageData, funcBack) {
+    /**
+     * @private
+     * @param {TypeReader} typeReader
+     * @param {ImageData} imageData
+     * @param {function} funcBack
+     * @returns {ImageData}
+     */
+    private readImageData(
+        typeReader: TypeReader,
+        imageData: ImageData,
+        funcBack
+    ): ImageData {
         this.validateImageData(imageData);
 
         let pixels = imageData.data;
@@ -355,15 +380,16 @@ export class TrimImage {
                 rowCurrent = row * len_col;
 
                 for (col = colIni; col < colFin; col += interator.col) {
-                    isBreak = funcBack.apply(
-                        {
+                    isBreak = funcBack.apply(this, [
+                        row,
+                        col,
+                        <ColorRGBA>{
                             red: getAndSetForPixel(rowCurrent + col),
                             green: getAndSetForPixel(rowCurrent + col + 1),
                             blue: getAndSetForPixel(rowCurrent + col + 2),
                             alpha: getAndSetForPixel(rowCurrent + col + 3)
-                        },
-                        [row, col]
-                    );
+                        }
+                    ]);
 
                     if (isBreak == 'break') {
                         break;
@@ -384,15 +410,16 @@ export class TrimImage {
                 rowCurrent = row * colIni;
 
                 for (col = colIni; col > colFin; col -= 4) {
-                    isBreak = funcBack.apply(
-                        {
+                    isBreak = funcBack.apply(this, [
+                        row,
+                        col,
+                        <ColorRGBA>{
                             red: getAndSetForPixel(rowCurrent - col),
                             green: getAndSetForPixel(rowCurrent - col - 3),
                             blue: getAndSetForPixel(rowCurrent - col - 2),
                             alpha: getAndSetForPixel(rowCurrent - col - 1)
-                        },
-                        [row, col]
-                    );
+                        }
+                    ]);
 
                     if (isBreak == 'break') {
                         break;
@@ -413,15 +440,16 @@ export class TrimImage {
                 for (row = rowIni; row < rowFin; row++) {
                     rowCurrent = row * colFin;
 
-                    isBreak = funcBack.apply(
-                        {
+                    isBreak = funcBack.apply(this, [
+                        row,
+                        col,
+                        <ColorRGBA>{
                             red: getAndSetForPixel(rowCurrent + col),
                             green: getAndSetForPixel(rowCurrent + col + 1),
                             blue: getAndSetForPixel(rowCurrent + col + 2),
                             alpha: getAndSetForPixel(rowCurrent + col + 3)
-                        },
-                        [row, col]
-                    );
+                        }
+                    ]);
 
                     if (isBreak == 'break') {
                         break;
@@ -442,15 +470,16 @@ export class TrimImage {
                 for (row = rowIni; row > rowFin; row--) {
                     rowCurrent = row * colIni - 4 + col;
 
-                    isBreak = funcBack.apply(
-                        {
+                    isBreak = funcBack.apply(this, [
+                        row,
+                        col,
+                        <ColorRGBA>{
                             red: getAndSetForPixel(rowCurrent - 3),
                             green: getAndSetForPixel(rowCurrent - 2),
                             blue: getAndSetForPixel(rowCurrent - 1),
                             alpha: getAndSetForPixel(rowCurrent)
-                        },
-                        [row, col]
-                    );
+                        }
+                    ]);
 
                     if (isBreak == 'break') {
                         break;
@@ -498,7 +527,7 @@ function is(element) {
  */
 function createImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
-        let img = new Image();       
+        let img = new Image();
         img.onload = () => resolve(img);
         img.onerror = reject;
         img.src = src;
