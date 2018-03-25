@@ -1,5 +1,6 @@
 import { TypeReader } from './constants/type-reader';
 import { ColorRGBA } from './contracts/color-rgba';
+import { ImageDataHelper } from './helpers/image-data.helper';
 
 /**
  * @export
@@ -35,21 +36,6 @@ export class TrimImage {
         if (callback !== undefined) {
             callback.call(this, this.image);
         }
-    }
-
-    /**
-     * @description - Devuelve un objeto imageData a partir de una imagen dada
-     * @param {HTMLImageElement} image
-     * @returns
-     */
-    getImageData(image: HTMLImageElement) {
-        let imgWidth = image.width;
-        let imgHeight = image.height;
-
-        let context = createCanvasBack(imgWidth, imgHeight).context;
-        context.drawImage(image, 0, 0, imgWidth, imgHeight);
-
-        return context.getImageData(0, 0, imgWidth, imgHeight);
     }
 
     /**
@@ -114,7 +100,9 @@ export class TrimImage {
      * @description - Elimina pixeles innecesarios para todos los bordes de la imagen
      */
     trim() {
-        this.image = this.getImage(this._trim(this.getImageData(this.image)));
+        this.image = this.getImage(
+            this._trim(ImageDataHelper.getImageData(this.image))
+        );
 
         return this;
     }
@@ -126,7 +114,7 @@ export class TrimImage {
      */
     trimTop() {
         this.image = this.getImage(
-            this._trimTop(this.getImageData(this.image))
+            this._trimTop(ImageDataHelper.getImageData(this.image))
         );
 
         return this;
@@ -139,7 +127,7 @@ export class TrimImage {
      */
     trimBottom() {
         this.image = this.getImage(
-            this._trimBottom(this.getImageData(this.image))
+            this._trimBottom(ImageDataHelper.getImageData(this.image))
         );
 
         return this;
@@ -152,7 +140,7 @@ export class TrimImage {
      */
     trimLeft() {
         this.image = this.getImage(
-            this._trimLeft(this.getImageData(this.image))
+            this._trimLeft(ImageDataHelper.getImageData(this.image))
         );
 
         return this;
@@ -164,7 +152,7 @@ export class TrimImage {
      */
     trimRight(): this {
         this.image = this.getImage(
-            this._trimRight(this.getImageData(this.image))
+            this._trimRight(ImageDataHelper.getImageData(this.image))
         );
 
         return this;
