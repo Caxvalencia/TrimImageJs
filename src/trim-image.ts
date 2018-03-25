@@ -86,9 +86,21 @@ export class TrimImage {
     static trim(image?, callback?) {
         return new TrimImage(image, callback).trim();
     }
+
+    static trimTop(image?, callback?) {
+        return new TrimImage(image, callback).trimTop();
+    }
     
+    static trimBottom(image?, callback?) {
+        return new TrimImage(image, callback).trimBottom();
+    }
+
     static trimLeft(image?, callback?) {
         return new TrimImage(image, callback).trimLeft();
+    }
+
+    static trimRight(image?, callback?) {
+        return new TrimImage(image, callback).trimRight();
     }
 
     /**
@@ -96,7 +108,7 @@ export class TrimImage {
      * @param [image object] image - Parametro opcional tipo Image
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
-    trim(image?) {
+    trim(image?: HTMLImageElement) {
         if (image !== undefined) {
             return this.getImage(this._trim(this.getImageData(image)));
         }
