@@ -9,20 +9,32 @@
         );
 
         contenedor.appendChild(
-            addAttrs(this.trimLeft(imagen), 'LEFT', 'TrimImage.trimLeft()')
-        );
-
-        contenedor.appendChild(
-            addAttrs(this.trimRight(imagen), 'RIGHT', 'TrimImage.trimRight()')
-        );
-
-        contenedor.appendChild(
-            addAttrs(this.trimTop(imagen), 'TOP', 'TrimImage.trimTop()')
+            addAttrs(
+                TrimImage.trimLeft(imagen).image,
+                'LEFT',
+                'TrimImage.trimLeft()'
+            )
         );
 
         contenedor.appendChild(
             addAttrs(
-                this.trimBottom(imagen),
+                TrimImage.trimRight(imagen).image,
+                'RIGHT',
+                'TrimImage.trimRight()'
+            )
+        );
+
+        contenedor.appendChild(
+            addAttrs(
+                TrimImage.trimTop(imagen).image,
+                'TOP',
+                'TrimImage.trimTop()'
+            )
+        );
+
+        contenedor.appendChild(
+            addAttrs(
+                TrimImage.trimBottom(imagen).image,
                 'BOTTOM',
                 'TrimImage.trimBottom()'
             )
