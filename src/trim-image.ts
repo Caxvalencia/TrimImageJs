@@ -1,6 +1,7 @@
 import { TypeReader } from './constants/type-reader';
 import { ColorRGBA } from './contracts/color-rgba';
 import { ImageDataHelper } from './helpers/image-data.helper';
+import { CanvasHelper } from './helpers/canvas.helper';
 
 /**
  * @export
@@ -50,10 +51,8 @@ export class TrimImage {
         let imgWidth = imageData.width;
         let imgHeight = imageData.height;
 
-        let canvasBack = createCanvasBack(imgWidth, imgHeight);
-
-        let context = canvasBack.context;
-        let canvas = canvasBack.canvas;
+        let canvas = CanvasHelper.create(imgWidth, imgHeight);
+        let context = canvas.getContext('2d');
 
         context.putImageData(imageData, 0, 0);
 
@@ -299,14 +298,9 @@ export class TrimImage {
         let copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni,
             copyWidth = colFin / 4 - colIni / 4;
 
-        let copyImageData: ImageData;
-
-        createCanvasBack(
+        let copyImageData: ImageData = ImageDataHelper.create(
             copyWidth,
-            copyHeight,
-            (ctx: CanvasRenderingContext2D) => {
-                copyImageData = ctx.createImageData(copyWidth, copyHeight);
-            }
+            copyHeight
         );
 
         let diffCol = len_col - colFin;
@@ -520,29 +514,4 @@ function createImage(src: string): Promise<HTMLImageElement> {
         img.onerror = reject;
         img.src = src;
     });
-}
-
-/**
- * @param width
- * @param height
- * @param funcBack
- */
-function createCanvasBack(width: number, height: number, funcBack?) {
-    let canvasDummy = document.createElement('canvas');
-
-    canvasDummy.width = width;
-    canvasDummy.height = height;
-
-    let context = canvasDummy.getContext('2d');
-
-    let scoper = {
-        canvas: canvasDummy,
-        context: context
-    };
-
-    if (funcBack) {
-        funcBack.apply(scoper, [context, canvasDummy]);
-    }
-
-    return scoper;
 }

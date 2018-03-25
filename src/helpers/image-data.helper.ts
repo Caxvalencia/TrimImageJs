@@ -15,4 +15,17 @@ export abstract class ImageDataHelper {
 
         return context.getImageData(0, 0, imgWidth, imgHeight);
     }
+
+    /**
+     * @static
+     * @param {number} width 
+     * @param {number} height 
+     * @returns {ImageData} 
+     */
+    static create(width: number, height: number): ImageData {
+        return CanvasHelper.context(width, height).createImageData(
+            width,
+            height
+        );
+    }
 }
