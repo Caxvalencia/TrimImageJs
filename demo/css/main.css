@@ -10,9 +10,9 @@ body {
 header {
     background: #555;
     color: #fff;
-	text-align: center;
-	width: 50%;
-	margin: 0 auto;
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
 }
 
 #contenedor {
@@ -22,8 +22,8 @@ header {
 }
 
 #content-ejemplo {
-	height: 95%;
-	width: 50%;
+    height: 95%;
+    width: 50%;
     margin: 0 auto;
 }
 
@@ -39,6 +39,26 @@ header {
     display: inline-flex;
     height: 100px;
     width: 200px;
+
+    background-color: #eee;
+    background-size: 15px 15px;
+    background-position: 0 0, 7.5px 7.5px;
+    background-image: linear-gradient(
+            45deg,
+            #ccc 25%,
+            transparent 25%,
+            transparent 75%,
+            #ccc 75%,
+            #ccc
+        ),
+        linear-gradient(
+            45deg,
+            #ccc 25%,
+            transparent 25%,
+            transparent 75%,
+            #ccc 75%,
+            #ccc
+        );
 }
 
 .description-box {
@@ -50,6 +70,6 @@ header {
 
 .img-class {
     display: block;
-    border: 1px dashed #fff;
+    border: 1px solid rgb(252, 9, 9);
     margin: auto;
 }
