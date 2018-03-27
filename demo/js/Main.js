@@ -5,14 +5,10 @@
         var imagen = this.image;
 
         contenedor.appendChild(
-            addAttrs(TrimImage.trim(imagen).image, 'ALL', 'TrimImage.trim()')
-        );
-
-        contenedor.appendChild(
             addAttrs(
-                TrimImage.trimLeft(imagen).image,
-                'LEFT',
-                'TrimImage.trimLeft()'
+                TrimImage.trimTop(imagen).image,
+                'TOP',
+                'TrimImage.trimTop()'
             )
         );
 
@@ -26,18 +22,22 @@
 
         contenedor.appendChild(
             addAttrs(
-                TrimImage.trimTop(imagen).image,
-                'TOP',
-                'TrimImage.trimTop()'
+                TrimImage.trimBottom(imagen).image,
+                'BOTTOM',
+                'TrimImage.trimBottom()'
             )
         );
 
         contenedor.appendChild(
             addAttrs(
-                TrimImage.trimBottom(imagen).image,
-                'BOTTOM',
-                'TrimImage.trimBottom()'
+                TrimImage.trimLeft(imagen).image,
+                'LEFT',
+                'TrimImage.trimLeft()'
             )
+        );
+
+        contenedor.appendChild(
+            addAttrs(TrimImage.trim(imagen).image, 'ALL', 'TrimImage.trim()')
         );
     });
 
