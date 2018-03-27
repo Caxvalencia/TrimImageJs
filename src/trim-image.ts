@@ -257,7 +257,7 @@ export class TrimImage {
         rowFin: number,
         colFin: number
     ): ImageData {
-        ImageDataHelper.validateImageData(imageData);
+        ImageDataHelper.validate(imageData);
 
         let pixels = imageData.data;
         let len_col = imageData.width * 4;
@@ -305,7 +305,7 @@ export class TrimImage {
         imageData: ImageData,
         funcBack
     ): ImageData {
-        ImageDataHelper.validateImageData(imageData);
+        ImageDataHelper.validate(imageData);
 
         let pixels = imageData.data;
         let row;
