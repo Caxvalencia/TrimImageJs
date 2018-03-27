@@ -1,7 +1,7 @@
 import { TypeReader } from './constants/type-reader';
 import { ColorRGBA } from './contracts/color-rgba';
 import { ImageDataHelper } from './helpers/image-data.helper';
-import { CanvasHelper } from './helpers/canvas.helper';
+import { ImageHelper } from './helpers/image.helper';
 
 /**
  * @export
@@ -31,42 +31,12 @@ export class TrimImage {
     async configureImage(image: string | HTMLImageElement, callback) {
         this.image =
             typeof image === 'string'
-                ? await createImage(image)
+                ? await ImageHelper.create(image)
                 : <HTMLImageElement>image;
 
         if (callback !== undefined) {
             callback.call(this, this.image);
         }
-    }
-
-    /**
-     * @description - Convierte un imageData object a un image object
-     *
-     * @param {imageData} imageData - Objeto con matriz de datos de la imagen
-     * @return {HTMLImageElement}
-     */
-    getImage(imageData, funcBack?) {
-        this.validateImageData(imageData);
-
-        let imgWidth = imageData.width;
-        let imgHeight = imageData.height;
-
-        let canvas = CanvasHelper.create(imgWidth, imgHeight);
-        let context = canvas.getContext('2d');
-
-        context.putImageData(imageData, 0, 0);
-
-        let image = new Image();
-        image.width = imgWidth;
-        image.height = imgHeight;
-
-        if (funcBack) {
-            image.onload = funcBack;
-        }
-
-        image.src = canvas.toDataURL('image/png');
-
-        return image;
     }
 
     /**
@@ -99,7 +69,7 @@ export class TrimImage {
      * @description - Elimina pixeles innecesarios para todos los bordes de la imagen
      */
     trim() {
-        this.image = this.getImage(
+        this.image = ImageDataHelper.getImage(
             this._trim(ImageDataHelper.getImageData(this.image))
         );
 
@@ -112,7 +82,7 @@ export class TrimImage {
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
     trimTop() {
-        this.image = this.getImage(
+        this.image = ImageDataHelper.getImage(
             this._trimTop(ImageDataHelper.getImageData(this.image))
         );
 
@@ -125,7 +95,7 @@ export class TrimImage {
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
     trimBottom() {
-        this.image = this.getImage(
+        this.image = ImageDataHelper.getImage(
             this._trimBottom(ImageDataHelper.getImageData(this.image))
         );
 
@@ -138,7 +108,7 @@ export class TrimImage {
      * @return [image object, this] - Retorna this si el parametro es indefinido
      */
     trimLeft() {
-        this.image = this.getImage(
+        this.image = ImageDataHelper.getImage(
             this._trimLeft(ImageDataHelper.getImageData(this.image))
         );
 
@@ -150,7 +120,7 @@ export class TrimImage {
      * @returns {this}
      */
     trimRight(): this {
-        this.image = this.getImage(
+        this.image = ImageDataHelper.getImage(
             this._trimRight(ImageDataHelper.getImageData(this.image))
         );
 
@@ -164,7 +134,7 @@ export class TrimImage {
      * @returns {ImageData}
      */
     private _trim(imageData: ImageData): ImageData {
-        this.validateImageData(imageData);
+        ImageDataHelper.validate(imageData);
 
         let trimmedImage = this._trimTop(imageData);
         trimmedImage = this._trimBottom(trimmedImage);
@@ -287,7 +257,7 @@ export class TrimImage {
         rowFin: number,
         colFin: number
     ): ImageData {
-        this.validateImageData(imageData);
+        ImageDataHelper.validateImageData(imageData);
 
         let pixels = imageData.data;
         let len_col = imageData.width * 4;
@@ -335,7 +305,7 @@ export class TrimImage {
         imageData: ImageData,
         funcBack
     ): ImageData {
-        this.validateImageData(imageData);
+        ImageDataHelper.validateImageData(imageData);
 
         let pixels = imageData.data;
         let row;
@@ -486,32 +456,4 @@ export class TrimImage {
 
         return imageData;
     }
-
-    /**
-     * @param imageData
-     */
-    private validateImageData(imageData) {
-        if (is(imageData) !== 'imagedata')
-            throw 'ImageData Exception: No es compatible el tipo de dato';
-    }
-}
-
-function is(element) {
-    return {}.toString
-        .call(element)
-        .match(/\s([a-z|A-Z]+)/)[1]
-        .toLowerCase();
-}
-
-/**
- * @param {string} src
- * @returns {Promise<HTMLImageElement>}
- */
-function createImage(src: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-        let img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-    });
 }
