@@ -2,6 +2,9 @@ import { TypeReader } from './constants/type-reader';
 import { ColorRGBA } from './contracts/color-rgba';
 import { ImageDataHelper } from './helpers/image-data.helper';
 import { ImageHelper } from './helpers/image.helper';
+import { ReaderBottom } from './readers/reader-bottom';
+import { ReaderLeft } from './readers/reader-left';
+import { ReaderRight } from './readers/reader-right';
 import { ReaderTop } from './readers/reader-top';
 
 /**
@@ -219,22 +222,22 @@ export class TrimImage {
      * @returns {ImageData}
      */
     private _trimRight(imageData: ImageData): ImageData {
-        let len_col = imageData.width * 4;
-        let len_row = imageData.height;
+        let lenCol = imageData.width * 4;
+        let lenRow = imageData.height;
 
         this.readImageData(
             TypeReader.RIGHT,
             imageData,
             (_row, _col, rgba: ColorRGBA) => {
                 if (rgba.alpha != 0) {
-                    len_col = _col;
+                    lenCol = _col;
 
                     return 'break';
                 }
             }
         );
 
-        return this.cutImageData(imageData, 0, 0, len_row, len_col);
+        return this.cutImageData(imageData, 0, 0, lenRow, lenCol);
     }
 
     /**
@@ -260,8 +263,8 @@ export class TrimImage {
         rowFin = rowFin == 0 ? 1 : rowFin;
         colFin = colFin == 0 ? 1 : colFin;
 
-        let copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni,
-            copyWidth = colFin / 4 - colIni / 4;
+        let copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni;
+        let copyWidth = colFin / 4 - colIni / 4;
 
         let copyImageData: ImageData = ImageDataHelper.create(
             copyWidth,
@@ -303,112 +306,17 @@ export class TrimImage {
         ImageDataHelper.validate(imageData);
 
         let pixels = imageData.data;
-        let row;
-        let col;
-        let rowCurrent = -1;
+        let lenCol = imageData.width * 4;
+        let lenRow = imageData.height;
 
-        let len_col = imageData.width * 4;
-        let len_row = imageData.height;
+        let reader = {
+            [TypeReader.TOP]: ReaderTop.apply,
+            [TypeReader.BOTTOM]: ReaderBottom.apply,
+            [TypeReader.LEFT]: ReaderLeft.apply,
+            [TypeReader.RIGHT]: ReaderRight.apply
+        };
 
-        let isBreak: any = false;
-
-        if (typeReader === TypeReader.TOP) {
-            ReaderTop.apply(pixels, len_row, len_col, funcBack);
-        } else if (typeReader === TypeReader.BOTTOM) {
-            let rowIni = len_row;
-            let rowFin = 0;
-            let colIni = len_col;
-            let colFin = 0;
-
-            for (row = rowIni; row >= rowFin; row--) {
-                rowCurrent = row * colIni;
-
-                for (col = colIni; col > colFin; col -= 4) {
-                    isBreak = funcBack.apply(this, [
-                        row,
-                        col,
-                        <ColorRGBA>{
-                            red: getAndSetForPixel(rowCurrent - col),
-                            green: getAndSetForPixel(rowCurrent - col - 3),
-                            blue: getAndSetForPixel(rowCurrent - col - 2),
-                            alpha: getAndSetForPixel(rowCurrent - col - 1)
-                        }
-                    ]);
-
-                    if (isBreak == 'break') {
-                        break;
-                    }
-                }
-
-                if (isBreak == 'break') {
-                    break;
-                }
-            }
-        } else if (typeReader === TypeReader.LEFT) {
-            let rowIni = 0;
-            let rowFin = len_row;
-            let colIni = 0;
-            let colFin = len_col;
-
-            for (col = colIni; col < colFin; col += 4) {
-                for (row = rowIni; row < rowFin; row++) {
-                    rowCurrent = row * colFin;
-
-                    isBreak = funcBack.apply(this, [
-                        row,
-                        col,
-                        <ColorRGBA>{
-                            red: getAndSetForPixel(rowCurrent + col),
-                            green: getAndSetForPixel(rowCurrent + col + 1),
-                            blue: getAndSetForPixel(rowCurrent + col + 2),
-                            alpha: getAndSetForPixel(rowCurrent + col + 3)
-                        }
-                    ]);
-
-                    if (isBreak == 'break') {
-                        break;
-                    }
-                }
-
-                if (isBreak == 'break') {
-                    break;
-                }
-            }
-        } else if (typeReader === TypeReader.RIGHT) {
-            let rowIni = len_row - 1;
-            let rowFin = 1;
-            let colIni = len_col;
-            let colFin = 0;
-
-            for (col = colIni; col > colFin; col -= 4) {
-                for (row = rowIni; row > rowFin; row--) {
-                    rowCurrent = row * colIni - 4 + col;
-
-                    isBreak = funcBack.apply(this, [
-                        row,
-                        col,
-                        <ColorRGBA>{
-                            red: getAndSetForPixel(rowCurrent - 3),
-                            green: getAndSetForPixel(rowCurrent - 2),
-                            blue: getAndSetForPixel(rowCurrent - 1),
-                            alpha: getAndSetForPixel(rowCurrent)
-                        }
-                    ]);
-
-                    if (isBreak == 'break') {
-                        break;
-                    }
-                }
-
-                if (isBreak == 'break') {
-                    break;
-                }
-            }
-        }
-
-        function getAndSetForPixel(pos) {
-            return pixels[pos];
-        }
+        reader[typeReader](pixels, lenRow, lenCol, funcBack);
 
         return imageData;
     }
