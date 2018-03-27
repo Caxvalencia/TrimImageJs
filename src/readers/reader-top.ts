@@ -1,6 +1,7 @@
 import { ColorRGBA } from '../contracts/color-rgba';
+import { ReaderBase } from './reader-base';
 
-export class ReaderTop {
+export class ReaderTop extends ReaderBase {
     /**
      * @static
      * @param {any} pixels
@@ -17,7 +18,7 @@ export class ReaderTop {
             col: 4
         };
 
-        let getAndSetForPixel = _getAndSetForPixel(pixels);
+        let getAndSetForPixel = super.getPixel(pixels);
 
         for (let row = 0; row < lenRow; row += interator.row) {
             rowCurrent = row * lenCol;
@@ -44,10 +45,4 @@ export class ReaderTop {
             }
         }
     }
-}
-
-function _getAndSetForPixel(pixels) {
-    return function(pos) {
-        return pixels[pos];
-    };
 }
