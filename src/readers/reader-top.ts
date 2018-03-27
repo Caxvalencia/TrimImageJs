@@ -18,7 +18,7 @@ export class ReaderTop extends ReaderBase {
             col: 4
         };
 
-        let getAndSetForPixel = super.getPixel(pixels);
+        let getPixel = super.getPixel(pixels);
 
         for (let row = 0; row < lenRow; row += interator.row) {
             rowCurrent = row * lenCol;
@@ -28,10 +28,10 @@ export class ReaderTop extends ReaderBase {
                     row,
                     col,
                     <ColorRGBA>{
-                        red: getAndSetForPixel(rowCurrent + col),
-                        green: getAndSetForPixel(rowCurrent + col + 1),
-                        blue: getAndSetForPixel(rowCurrent + col + 2),
-                        alpha: getAndSetForPixel(rowCurrent + col + 3)
+                        red: getPixel(rowCurrent + col),
+                        green: getPixel(rowCurrent + col + 1),
+                        blue: getPixel(rowCurrent + col + 2),
+                        alpha: getPixel(rowCurrent + col + 3)
                     }
                 ]);
 

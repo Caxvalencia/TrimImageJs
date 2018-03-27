@@ -12,7 +12,7 @@ export class ReaderBottom extends ReaderBase {
     static apply(pixels, lenRow, lenCol, funcBack) {
         let rowCurrent = -1;
         let isBreak: any = false;
-        let getAndSetForPixel = super.getPixel(pixels);
+        let getPixel = super.getPixel(pixels);
 
         let rowIni = lenRow;
         let rowFin = 0;
@@ -27,10 +27,10 @@ export class ReaderBottom extends ReaderBase {
                     row,
                     col,
                     <ColorRGBA>{
-                        red: getAndSetForPixel(rowCurrent - col),
-                        green: getAndSetForPixel(rowCurrent - col - 3),
-                        blue: getAndSetForPixel(rowCurrent - col - 2),
-                        alpha: getAndSetForPixel(rowCurrent - col - 1)
+                        red: getPixel(rowCurrent - col),
+                        green: getPixel(rowCurrent - col - 3),
+                        blue: getPixel(rowCurrent - col - 2),
+                        alpha: getPixel(rowCurrent - col - 1)
                     }
                 ]);
 
