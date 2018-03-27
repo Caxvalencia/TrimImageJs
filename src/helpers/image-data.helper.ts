@@ -6,21 +6,18 @@ export abstract class ImageDataHelper {
      * @param {ImageData} imageData - Objeto con matriz de datos de la imagen
      * @return {HTMLImageElement}
      */
-    static getImage(imageData) {
+    static getImage(imageData: ImageData) {
         ImageDataHelper.validate(imageData);
 
         let imgWidth = imageData.width;
         let imgHeight = imageData.height;
 
         let canvas = CanvasHelper.create(imgWidth, imgHeight);
-        let context = canvas.getContext('2d');
-
-        context.putImageData(imageData, 0, 0);
+        canvas.getContext('2d').putImageData(imageData, 0, 0);
 
         let image = new Image();
         image.width = imgWidth;
         image.height = imgHeight;
-
         image.src = canvas.toDataURL('image/png');
 
         return image;
@@ -56,7 +53,7 @@ export abstract class ImageDataHelper {
 
     /**
      * @static
-     * @param {ImageData} imageData 
+     * @param {ImageData} imageData
      */
     static validate(imageData: ImageData) {
         if (is(imageData) !== 'imagedata') {

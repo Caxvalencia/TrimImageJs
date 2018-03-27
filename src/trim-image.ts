@@ -2,6 +2,7 @@ import { TypeReader } from './constants/type-reader';
 import { ColorRGBA } from './contracts/color-rgba';
 import { ImageDataHelper } from './helpers/image-data.helper';
 import { ImageHelper } from './helpers/image.helper';
+import { ReaderTop } from './readers/reader-top';
 
 /**
  * @export
@@ -39,12 +40,6 @@ export class TrimImage {
         }
     }
 
-    /**
-     * @static
-     * @param {any} [image]
-     * @param {function} [callback]
-     * @returns
-     */
     static trim(image?, callback?) {
         return new TrimImage(image, callback).trim();
     }
@@ -158,7 +153,7 @@ export class TrimImage {
             TypeReader.TOP,
             imageData,
             (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha() != 0) {
+                if (rgba.alpha != 0) {
                     row = _row;
 
                     return 'break';
@@ -182,7 +177,7 @@ export class TrimImage {
             TypeReader.BOTTOM,
             imageData,
             (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha() != 0) {
+                if (rgba.alpha != 0) {
                     lenghtRow = _row;
 
                     return 'break';
@@ -207,7 +202,7 @@ export class TrimImage {
             TypeReader.LEFT,
             imageData,
             (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha() != 0) {
+                if (rgba.alpha != 0) {
                     column = _col;
 
                     return 'break';
@@ -231,7 +226,7 @@ export class TrimImage {
             TypeReader.RIGHT,
             imageData,
             (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha() != 0) {
+                if (rgba.alpha != 0) {
                     len_col = _col;
 
                     return 'break';
@@ -318,40 +313,7 @@ export class TrimImage {
         let isBreak: any = false;
 
         if (typeReader === TypeReader.TOP) {
-            let rowIni = 0;
-            let rowFin = len_row;
-            let colIni = 0;
-            let colFin = len_col;
-
-            let interator = {
-                row: 1,
-                col: 4
-            };
-
-            for (row = rowIni; row < rowFin; row += interator.row) {
-                rowCurrent = row * len_col;
-
-                for (col = colIni; col < colFin; col += interator.col) {
-                    isBreak = funcBack.apply(this, [
-                        row,
-                        col,
-                        <ColorRGBA>{
-                            red: getAndSetForPixel(rowCurrent + col),
-                            green: getAndSetForPixel(rowCurrent + col + 1),
-                            blue: getAndSetForPixel(rowCurrent + col + 2),
-                            alpha: getAndSetForPixel(rowCurrent + col + 3)
-                        }
-                    ]);
-
-                    if (isBreak == 'break') {
-                        break;
-                    }
-                }
-
-                if (isBreak == 'break') {
-                    break;
-                }
-            }
+            ReaderTop.apply(pixels, len_row, len_col, funcBack);
         } else if (typeReader === TypeReader.BOTTOM) {
             let rowIni = len_row;
             let rowFin = 0;
@@ -445,13 +407,7 @@ export class TrimImage {
         }
 
         function getAndSetForPixel(pos) {
-            return function(val) {
-                if (!val) {
-                    return pixels[pos];
-                }
-
-                pixels[pos] = val;
-            };
+            return pixels[pos];
         }
 
         return imageData;
