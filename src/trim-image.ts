@@ -1,5 +1,4 @@
 import { TypeReader } from './constants/type-reader';
-import { ColorRGBA } from './contracts/color-rgba';
 import { ImageDataHelper } from './helpers/image-data.helper';
 import { ImageHelper } from './helpers/image.helper';
 import { ReaderBottom } from './readers/reader-bottom';
@@ -148,21 +147,9 @@ export class TrimImage {
      * @returns {ImageData}
      */
     private _trimTop(imageData: ImageData): ImageData {
-        let row = 0;
+        let row = this.readImageData(TypeReader.TOP, imageData).row; // default 0
         let lenghtCol = imageData.width * 4;
         let lenghtRow = imageData.height;
-
-        this.readImageData(
-            TypeReader.TOP,
-            imageData,
-            (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha != 0) {
-                    row = _row;
-
-                    return 'break';
-                }
-            }
-        );
 
         return this.cutImageData(imageData, row, 0, lenghtRow, lenghtCol);
     }
@@ -173,20 +160,10 @@ export class TrimImage {
      * @returns {ImageData}
      */
     private _trimBottom(imageData: ImageData): ImageData {
-        let lenghtRow = imageData.height;
+        let lenghtRow =
+            this.readImageData(TypeReader.BOTTOM, imageData).row ||
+            imageData.height;
         let lenghtCol = imageData.width * 4;
-
-        this.readImageData(
-            TypeReader.BOTTOM,
-            imageData,
-            (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha != 0) {
-                    lenghtRow = _row;
-
-                    return 'break';
-                }
-            }
-        );
 
         return this.cutImageData(imageData, 0, 0, lenghtRow, lenghtCol);
     }
@@ -197,21 +174,9 @@ export class TrimImage {
      * @returns {ImageData}
      */
     private _trimLeft(imageData: ImageData): ImageData {
-        let column = 0;
+        let column = this.readImageData(TypeReader.LEFT, imageData).col; //default 0
         let lenghtCol = imageData.width * 4;
         let lenghtRow = imageData.height;
-
-        this.readImageData(
-            TypeReader.LEFT,
-            imageData,
-            (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha != 0) {
-                    column = _col;
-
-                    return 'break';
-                }
-            }
-        );
 
         return this.cutImageData(imageData, 0, column, lenghtRow, lenghtCol);
     }
@@ -225,17 +190,7 @@ export class TrimImage {
         let lenCol = imageData.width * 4;
         let lenRow = imageData.height;
 
-        this.readImageData(
-            TypeReader.RIGHT,
-            imageData,
-            (_row, _col, rgba: ColorRGBA) => {
-                if (rgba.alpha != 0) {
-                    lenCol = _col;
-
-                    return 'break';
-                }
-            }
-        );
+        lenCol = this.readImageData(TypeReader.RIGHT, imageData).col || lenCol;
 
         return this.cutImageData(imageData, 0, 0, lenRow, lenCol);
     }
@@ -295,29 +250,22 @@ export class TrimImage {
      * @private
      * @param {TypeReader} typeReader
      * @param {ImageData} imageData
-     * @param {function} funcBack
      * @returns {ImageData}
      */
-    private readImageData(
-        typeReader: TypeReader,
-        imageData: ImageData,
-        funcBack
-    ): ImageData {
+    private readImageData(typeReader: TypeReader, imageData: ImageData): any {
         ImageDataHelper.validate(imageData);
 
         let pixels = imageData.data;
-        let lenCol = imageData.width * 4;
         let lenRow = imageData.height;
+        let lenCol = imageData.width * 4;
 
         let reader = {
-            [TypeReader.TOP]: ReaderTop.apply,
-            [TypeReader.BOTTOM]: ReaderBottom.apply,
-            [TypeReader.LEFT]: ReaderLeft.apply,
-            [TypeReader.RIGHT]: ReaderRight.apply
+            [TypeReader.TOP]: ReaderTop,
+            [TypeReader.BOTTOM]: ReaderBottom,
+            [TypeReader.LEFT]: ReaderLeft,
+            [TypeReader.RIGHT]: ReaderRight
         };
 
-        reader[typeReader](pixels, lenRow, lenCol, funcBack);
-
-        return imageData;
+        return reader[typeReader].apply(pixels, lenRow, lenCol);
     }
 }

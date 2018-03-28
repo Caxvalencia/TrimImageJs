@@ -4,12 +4,12 @@ import { ReaderBase } from './reader-base';
 export class ReaderLeft extends ReaderBase {
     /**
      * @static
-     * @param {any} pixels
-     * @param {any} lenRow
-     * @param {any} lenCol
-     * @param {any} funcBack
+     * @param {Uint8ClampedArray} pixels
+     * @param {number} lenRow
+     * @param {number} lenCol
+     * @returns
      */
-    static apply(pixels, lenRow, lenCol, funcBack) {
+    static apply(pixels: Uint8ClampedArray, lenRow: number, lenCol: number) {
         let rowCurrent = -1;
         let isBreak: any = false;
         let getPixel = super.getPixel(pixels);
@@ -23,20 +23,22 @@ export class ReaderLeft extends ReaderBase {
             for (let row = rowInit; row < rowEnd; row++) {
                 rowCurrent = row * colEnd;
 
-                isBreak = funcBack.apply(this, [
+                let alpha = getPixel(rowCurrent + col + 3);
+
+                if (alpha === 0) {
+                    continue;
+                }
+
+                return {
                     row,
                     col,
-                    <ColorRGBA>{
+                    rgba: <ColorRGBA>{
                         red: getPixel(rowCurrent + col),
                         green: getPixel(rowCurrent + col + 1),
                         blue: getPixel(rowCurrent + col + 2),
-                        alpha: getPixel(rowCurrent + col + 3)
+                        alpha
                     }
-                ]);
-
-                if (isBreak == 'break') {
-                    break;
-                }
+                };
             }
 
             if (isBreak == 'break') {

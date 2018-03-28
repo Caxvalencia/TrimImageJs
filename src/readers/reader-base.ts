@@ -1,11 +1,11 @@
-export class ReaderBase {
+export abstract class ReaderBase {
     /**
      * @static
-     * @param {any} pixels 
-     * @returns  
+     * @param {any} pixels
+     * @returns
      */
     static getPixel(pixels) {
-        return (index) => {
+        return index => {
             return pixels[index];
         };
     }

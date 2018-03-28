@@ -4,14 +4,13 @@ import { ReaderBase } from './reader-base';
 export class ReaderRight extends ReaderBase {
     /**
      * @static
-     * @param {any} pixels
-     * @param {any} lenRow
-     * @param {any} lenCol
-     * @param {any} funcBack
+     * @param {Uint8ClampedArray} pixels
+     * @param {number} lenRow
+     * @param {number} lenCol
+     * @returns
      */
-    static apply(pixels, lenRow, lenCol, funcBack) {
+    static apply(pixels: Uint8ClampedArray, lenRow: number, lenCol: number) {
         let rowCurrent = -1;
-        let isBreak: any = false;
         let getPixel = super.getPixel(pixels);
 
         let rowIni = lenRow - 1;
@@ -23,24 +22,22 @@ export class ReaderRight extends ReaderBase {
             for (let row = rowIni; row > rowFin; row--) {
                 rowCurrent = row * colIni - 4 + col;
 
-                isBreak = funcBack.apply(this, [
+                let alpha = getPixel(rowCurrent);
+
+                if (alpha === 0) {
+                    continue;
+                }
+
+                return {
                     row,
                     col,
-                    <ColorRGBA>{
+                    rgba: <ColorRGBA>{
                         red: getPixel(rowCurrent - 3),
                         green: getPixel(rowCurrent - 2),
                         blue: getPixel(rowCurrent - 1),
-                        alpha: getPixel(rowCurrent)
+                        alpha
                     }
-                ]);
-
-                if (isBreak == 'break') {
-                    break;
-                }
-            }
-
-            if (isBreak == 'break') {
-                break;
+                };
             }
         }
     }
