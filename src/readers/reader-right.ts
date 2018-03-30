@@ -1,6 +1,5 @@
-import { ColorRGBA } from '../contracts/color-rgba';
-import { ReaderBase } from './reader-base';
 import { IReaderPosition } from '../contracts/reader-position';
+import { ReaderBase } from './reader-base';
 
 export class ReaderRight extends ReaderBase {
     /**
@@ -33,16 +32,7 @@ export class ReaderRight extends ReaderBase {
                     continue;
                 }
 
-                return {
-                    row,
-                    col,
-                    rgba: <ColorRGBA>{
-                        red: getPixel(rowCurrent - 3),
-                        green: getPixel(rowCurrent - 2),
-                        blue: getPixel(rowCurrent - 1),
-                        alpha
-                    }
-                };
+                return { row, col };
             }
         }
     }

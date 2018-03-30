@@ -1,4 +1,3 @@
-import { ColorRGBA } from '../contracts/color-rgba';
 import { IReaderPosition } from '../contracts/reader-position';
 import { ReaderBase } from './reader-base';
 
@@ -10,7 +9,11 @@ export class ReaderTop extends ReaderBase {
      * @param {number} lenCol
      * @returns {IReaderPosition}
      */
-    static apply(pixels: Uint8ClampedArray, lenRow: number, lenCol: number): IReaderPosition {
+    static apply(
+        pixels: Uint8ClampedArray,
+        lenRow: number,
+        lenCol: number
+    ): IReaderPosition {
         let getPixel = super.getPixel(pixels);
         let interator = {
             row: 1,
@@ -27,16 +30,7 @@ export class ReaderTop extends ReaderBase {
                     continue;
                 }
 
-                return {
-                    row,
-                    col,
-                    rgba: <ColorRGBA>{
-                        red: getPixel(rowCurrent + col),
-                        green: getPixel(rowCurrent + col + 1),
-                        blue: getPixel(rowCurrent + col + 2),
-                        alpha
-                    }
-                };
+                return { row, col };
             }
         }
     }
