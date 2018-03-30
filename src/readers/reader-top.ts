@@ -1,11 +1,6 @@
 import { ColorRGBA } from '../contracts/color-rgba';
+import { IReaderPosition } from '../contracts/reader-position';
 import { ReaderBase } from './reader-base';
-
-export declare type ReaderFinded = {
-    row: number;
-    col: number;
-    rgba: ColorRGBA;
-};
 
 export class ReaderTop extends ReaderBase {
     /**
@@ -13,9 +8,9 @@ export class ReaderTop extends ReaderBase {
      * @param {Uint8ClampedArray} pixels
      * @param {number} lenRow
      * @param {number} lenCol
-     * @returns
+     * @returns {IReaderPosition}
      */
-    static apply(pixels: Uint8ClampedArray, lenRow: number, lenCol: number) {
+    static apply(pixels: Uint8ClampedArray, lenRow: number, lenCol: number): IReaderPosition {
         let getPixel = super.getPixel(pixels);
         let interator = {
             row: 1,

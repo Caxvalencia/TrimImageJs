@@ -1,5 +1,6 @@
 import { ColorRGBA } from '../contracts/color-rgba';
 import { ReaderBase } from './reader-base';
+import { IReaderPosition } from '../contracts/reader-position';
 
 export class ReaderRight extends ReaderBase {
     /**
@@ -7,9 +8,13 @@ export class ReaderRight extends ReaderBase {
      * @param {Uint8ClampedArray} pixels
      * @param {number} lenRow
      * @param {number} lenCol
-     * @returns
+     * @returns {IReaderPosition}
      */
-    static apply(pixels: Uint8ClampedArray, lenRow: number, lenCol: number) {
+    static apply(
+        pixels: Uint8ClampedArray,
+        lenRow: number,
+        lenCol: number
+    ): IReaderPosition {
         let rowCurrent = -1;
         let getPixel = super.getPixel(pixels);
 
