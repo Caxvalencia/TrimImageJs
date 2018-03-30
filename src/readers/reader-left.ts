@@ -16,7 +16,6 @@ export class ReaderLeft extends ReaderBase {
         lenCol: number
     ): IReaderPosition {
         let rowCurrent = -1;
-        let isBreak: any = false;
         let getPixel = super.getPixel(pixels);
 
         let rowInit = 0;
@@ -44,10 +43,6 @@ export class ReaderLeft extends ReaderBase {
                         alpha
                     }
                 };
-            }
-
-            if (isBreak == 'break') {
-                break;
             }
         }
     }
