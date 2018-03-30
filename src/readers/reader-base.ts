@@ -1,11 +1,11 @@
 export abstract class ReaderBase {
     /**
      * @static
-     * @param {any} pixels
-     * @returns
+     * @param {Uint8ClampedArray} pixels
+     * @returns {Function}
      */
-    static getPixel(pixels) {
-        return index => {
+    static getPixel(pixels: Uint8ClampedArray): Function {
+        return (index: number): number => {
             return pixels[index];
         };
     }
