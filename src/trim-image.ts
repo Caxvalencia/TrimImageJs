@@ -5,6 +5,7 @@ import { ReaderBottom } from './readers/reader-bottom';
 import { ReaderLeft } from './readers/reader-left';
 import { ReaderRight } from './readers/reader-right';
 import { ReaderTop } from './readers/reader-top';
+import { IReaderPosition } from './contracts/reader-position';
 
 /**
  * @export
@@ -191,42 +192,42 @@ export class TrimImage {
 
     /**
      * @param {ImageData} imageData
-     * @param {number} rowIni
-     * @param {number} colIni
-     * @param {number} rowFin
-     * @param {number} colFin
+     * @param {number} rowInit
+     * @param {number} colInit
+     * @param {number} rowEnd
+     * @param {number} colEnd
      * @returns {ImageData}
      */
     cutImageData(
         imageData: ImageData,
-        rowIni: number,
-        colIni: number,
-        rowFin: number,
-        colFin: number
+        rowInit: number,
+        colInit: number,
+        rowEnd: number,
+        colEnd: number
     ): ImageData {
         ImageDataHelper.validate(imageData);
 
         let pixels = imageData.data;
-        let len_col = imageData.width * 4;
+        let lenCol = imageData.width * 4;
 
-        rowFin = rowFin == 0 ? 1 : rowFin;
-        colFin = colFin == 0 ? 1 : colFin;
+        rowEnd = rowEnd == 0 ? 1 : rowEnd;
+        colEnd = colEnd == 0 ? 1 : colEnd;
 
-        let copyHeight = rowFin == rowIni ? 1 : rowFin - rowIni;
-        let copyWidth = colFin / 4 - colIni / 4;
+        let copyHeight = rowEnd == rowInit ? 1 : rowEnd - rowInit;
+        let copyWidth = colEnd / 4 - colInit / 4;
 
         let copyImageData: ImageData = ImageDataHelper.create(
             copyWidth,
             copyHeight
         );
 
-        let diffCol = len_col - colFin;
+        let diffCol = lenCol - colEnd;
         let countCopy = 0;
 
-        for (let row = rowIni; row < rowFin; row++) {
-            let rowCurrent = row * colFin + row * diffCol;
+        for (let row = rowInit; row < rowEnd; row++) {
+            let rowCurrent = row * colEnd + row * diffCol;
 
-            for (let col = colIni; col < colFin; col += 4, countCopy += 4) {
+            for (let col = colInit; col < colEnd; col += 4, countCopy += 4) {
                 copyImageData.data[countCopy] = pixels[rowCurrent + col];
                 copyImageData.data[countCopy + 1] =
                     pixels[rowCurrent + col + 1];
@@ -246,7 +247,10 @@ export class TrimImage {
      * @param {ImageData} imageData
      * @returns {ImageData}
      */
-    private readImageData(typeReader: TypeReader, imageData: ImageData): any {
+    private readImageData(
+        typeReader: TypeReader,
+        imageData: ImageData
+    ): IReaderPosition {
         ImageDataHelper.validate(imageData);
 
         let pixels = imageData.data;
