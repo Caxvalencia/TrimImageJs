@@ -17,14 +17,14 @@ export class ReaderRight extends ReaderBase {
         let rowCurrent = -1;
         let getPixel = super.createGetPixel(pixels);
 
-        let rowIni = lenRow - 1;
-        let rowFin = 1;
-        let colIni = lenCol;
-        let colFin = 0;
+        let rowInit = lenRow - 1;
+        let rowEnd = 1;
+        let colInit = lenCol;
+        let colEnd = 0;
 
-        for (let col = colIni; col > colFin; col -= 4) {
-            for (let row = rowIni; row > rowFin; row--) {
-                rowCurrent = row * colIni - 4 + col;
+        for (let col = colInit; col > colEnd; col -= 4) {
+            for (let row = rowInit; row > rowEnd; row--) {
+                rowCurrent = row * colInit - 4 + col;
 
                 let alpha = getPixel(rowCurrent);
 

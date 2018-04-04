@@ -17,15 +17,15 @@ export class ReaderBottom extends ReaderBase {
         let rowCurrent = -1;
         let getPixel = super.createGetPixel(pixels);
 
-        let rowIni = lenRow;
-        let rowFin = 0;
-        let colIni = lenCol;
-        let colFin = 0;
+        let rowInit = lenRow;
+        let rowEnd = 0;
+        let colInit = lenCol;
+        let colEnd = 0;
 
-        for (let row = rowIni; row >= rowFin; row--) {
-            rowCurrent = row * colIni;
+        for (let row = rowInit; row >= rowEnd; row--) {
+            rowCurrent = row * colInit;
 
-            for (let col = colIni; col > colFin; col -= 4) {
+            for (let col = colInit; col > colEnd; col -= 4) {
                 let alpha = getPixel(rowCurrent - col - 1);
 
                 if (alpha === 0) {
