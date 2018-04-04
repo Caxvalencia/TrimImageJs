@@ -14,7 +14,7 @@ export class ReaderTop extends ReaderBase {
         lenRow: number,
         lenCol: number
     ): IReaderPosition {
-        let getPixel = super.getPixel(pixels);
+        let getPixel = super.createGetPixel(pixels);
         let interator = {
             row: 1,
             col: 4

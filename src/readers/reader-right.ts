@@ -15,7 +15,7 @@ export class ReaderRight extends ReaderBase {
         lenCol: number
     ): IReaderPosition {
         let rowCurrent = -1;
-        let getPixel = super.getPixel(pixels);
+        let getPixel = super.createGetPixel(pixels);
 
         let rowIni = lenRow - 1;
         let rowFin = 1;
